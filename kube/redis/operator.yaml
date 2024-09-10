@@ -1,0 +1,9 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: redis-operator
+  namespace: redis
+spec:
+  repo: https://ot-container-kit.github.io/helm-charts/
+  chart: redis-operator
+  targetNamespace: redis
