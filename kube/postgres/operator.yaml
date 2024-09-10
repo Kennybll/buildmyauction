@@ -1,0 +1,9 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: postgres-operator
+  namespace: postgres
+spec:
+  repo: https://opensource.zalando.com/postgres-operator/charts/postgres-operator
+  chart: postgres-operator
+  targetNamespace: postgres
