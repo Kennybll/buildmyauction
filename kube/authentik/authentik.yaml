@@ -1,0 +1,68 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: authentik
+  namespace: authentik
+spec:
+  repo: https://charts.goauthentik.io
+  chart: authentik
+  targetNamespace: authentik
+  valuesContent: |-
+    authentik:
+      error_reporting:
+          enabled: false
+      secret_key: file:///authentik-secrets/secret-key
+      postgresql:
+        host: authentik-cluster.authentik.svc.cluster.local
+        user: file:///postgres-secrets/username
+        password: file:///postgres-secrets/password
+        sslmode: require
+      redis:
+        host: authentik-redis.authentik.svc.cluster.local
+        password: file:///authentik-secrets/redis-password
+
+    server:
+      volumes:
+        - name: authentik-secrets
+          secret:
+            secretName: authentik-secrets
+        - name: postgres-secrets
+          secret:
+            secretName: authentik.authentik-cluster.credentials.postgresql.acid.zalan.do
+      volumeMounts:
+        - name: authentik-secrets
+          mountPath: /authentik-secrets
+          readOnly: true
+        - name: postgres-secrets
+          mountPath: /postgres-secrets
+          readOnly: true
+      ingress:
+        ingressClassName: traefik
+        enabled: true
+        hosts:
+          - auth.buildmyauction.com
+        annotations:
+          cert-manager.io/cluster-issuer: "letsencrypt-prod"
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+    
+    postgresql:
+      enabled: false
+    
+    redis:
+      enabled: false
+    
+    worker:
+      volumes:
+        - name: authentik-secrets
+          secret:
+            secretName: authentik-secrets
+        - name: postgres-secrets
+          secret:
+            secretName: authentik.authentik-cluster.credentials.postgresql.acid.zalan.do
+      volumeMounts:
+        - name: authentik-secrets
+          mountPath: /authentik-secrets
+          readOnly: true
+        - name: postgres-secrets
+          mountPath: /postgres-secrets
+          readOnly: true

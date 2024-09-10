@@ -1,0 +1,22 @@
+apiVersion: redis.redis.opstreelabs.in/v1beta1
+kind: Redis
+metadata:
+  name: authentik-redis
+  namespace: authentik
+spec:
+  kubernetesConfig:
+    image: quay.io/opstree/redis:v7.0.5
+    imagePullPolicy: IfNotPresent
+    redisSecret:
+      name: authentik-secrets
+      key: redis-password
+  storage:
+    volumeClaimTemplate:
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+  securityContext:
+    runAsUser: 1000
+    fsGroup: 1000
